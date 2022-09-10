@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import RPi.GPIO as io
 
-from constants import FILENAME_LOG_HAMSTERWHEEL
+from constants import LOG_HAMSTERWHEEL
 from utils import log
 
 
@@ -122,7 +122,7 @@ class HamsterWheel():
 
         io.setup(self._wheelpin, io.IN, pull_up_down=io.PUD_UP)
         msg = f'Set up GPIO, using wheel pin {self._wheelpin}'
-        log(log_path=FILENAME_LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
+        log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
 
     def _setup_aws(self) -> None:
         """Method to set up communication with AWS.
@@ -142,13 +142,13 @@ class HamsterWheel():
             self._setup_aws()
 
         msg = 'Started script...'
-        log(log_path=FILENAME_LOG_HAMSTERWHEEL, logmsg=msg, printout=True)    
+        log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)    
 
         try:
             # Readout loop
             while True:
                 msg = 'Running...'
-                log(log_path=FILENAME_LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
+                log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
                 time.sleep(self._deadtime)
                 if io.input(self._wheelpin) == 0:
                     if 'local' in self._mode:
@@ -172,6 +172,6 @@ if __name__ == "__main__":
         mode=['local'],
         wheelpin=18,
         deadtime=1.0,
-        local_log_path=FILENAME_LOG_HAMSTERWHEEL
+        local_log_path=LOG_HAMSTERWHEEL
     )
     hamsterwheel.readout()

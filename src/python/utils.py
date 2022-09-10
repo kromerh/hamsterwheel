@@ -31,7 +31,7 @@ def log(log_path: str, logmsg: str, printout: bool = False) -> None:
     if printout:
         logger.info(f"## Added log message: {logmsg}.")
 
-    with open(log_path, 'a') as f:
-        f.write('\n')
-        f.write(logmsg)
-        f.close()
+    with open(log_path, 'a') as file:
+        file.write('\n')
+        file.write(logmsg)
+        file.close()
