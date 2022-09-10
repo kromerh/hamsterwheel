@@ -1,9 +1,11 @@
-import RPi.GPIO as io
 import sys
 import time
-from typing import Any, List, Optional
-from hamsterwheel.src.python.constants import FILENAME_LOG_HAMSTERWHEEL
-from hamsterwheel.src.python.utils import log
+from typing import List, Optional
+
+import RPi.GPIO as io
+
+from constants import FILENAME_LOG_HAMSTERWHEEL
+from utils import log
 
 
 class HamsterWheel():
