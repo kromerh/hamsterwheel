@@ -107,8 +107,14 @@ class HamsterWheel():
         If readout mode 'local', puts pin_state in the logfile.
         If readout mode 'aws', sends message to specified endpoint.
         """
+        # Set GPIO
+        self._setup_rpi()
+        # Set AWS if selected
+        if 'aws' in self._mode:
+            self._setup_aws()
+
         msg = 'Started script...'
-        log(log_path=self._local_log_path, logmsg=msg, printout=True)
+        log(log_path=self._local_log_path, logmsg=msg, printout=True)        
 
         try:
             # Readout loop
