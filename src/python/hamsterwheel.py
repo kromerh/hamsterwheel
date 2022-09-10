@@ -15,6 +15,8 @@ class HamsterWheel():
         mode: Controls output location of the sensor data.
             Currently supports: local, aws
         wheelpin: GPIO pin to communicate with the reed sensor.
+        deadtime: Readout dead time to protect the sensor in seconds.
+            Defaults to 1 second.
         local_log_path: Full path to store the readout data in local mode.
             Is required if 'local' is part of `mode`.
     """
@@ -24,11 +26,13 @@ class HamsterWheel():
         self,
         mode: List[str],
         wheelpin: int,
+        deadtime: float = 1.0,
         local_log_path: Optional[str] = None,
     ) -> None:
         self._local_log_path = local_log_path
         self._mode = HamsterWheel._validate_mode(mode=mode, local_log_path=local_log_path)
         self._wheelpin = HamsterWheel._validate_wheelpin(wheelpin=wheelpin)
+        self._deadtime = HamsterWheel._validate_deadtime(deadtime=deadtime)
 
     @classmethod
     def _validate_mode(cls, mode: List[str], local_log_path: Optional[str] = None) -> List[str]:
@@ -70,7 +74,7 @@ class HamsterWheel():
             wheelpin: Wheelpin input argument.
 
         Returns:
-            Wheelpin if it is a valid integer.
+            Wheelpin if it is valid.
 
         Raises:
             ValueError if the user input is not supported.
@@ -86,6 +90,30 @@ class HamsterWheel():
 
         return wheelpin
 
+    @classmethod
+    def _validate_deadtime(cls, deadtime: float) -> float:
+        """Class method to validate user input.
+
+        Args:
+            deadtime: Deadtime input argument.
+
+        Returns:
+            deadtime if it is valid.
+
+        Raises:
+            ValueError if the user input is not supported.
+        """
+        try:
+            assert isinstance(deadtime, float)
+            assert deadtime > 0.0
+            assert deadtime < 5.0
+
+        except AssertionError:
+            errmsg = f'Deadtime {deadtime} is supported. Must be float and between 0 and 5.0.'
+            raise ValueError(errmsg) from AssertionError
+
+        return deadtime
+
     def _setup_rpi(self) -> None:
         """Method to set up the GPIO on the RaspberryPi.
         """
@@ -94,7 +122,7 @@ class HamsterWheel():
 
         io.setup(self._wheelpin, io.IN, pull_up_down=io.PUD_UP)
         msg = f'Set up GPIO, using wheel pin {self._wheelpin}'
-        log(log_path=self._local_log_path, logmsg=msg, printout=True)
+        log(log_path=FILENAME_LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
 
     def _setup_aws(self) -> None:
         """Method to set up communication with AWS.
@@ -114,14 +142,14 @@ class HamsterWheel():
             self._setup_aws()
 
         msg = 'Started script...'
-        log(log_path=self._local_log_path, logmsg=msg, printout=True)        
+        log(log_path=FILENAME_LOG_HAMSTERWHEEL, logmsg=msg, printout=True)    
 
         try:
             # Readout loop
             while True:
                 msg = 'Running...'
-                log(log_path=self._local_log_path, logmsg=msg, printout=True)
-                time.sleep(0.01)
+                log(log_path=FILENAME_LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
+                time.sleep(self._deadtime)
                 if io.input(self._wheelpin) == 0:
                     if 'local' in self._mode:
                         msg = 'pin_state = 0'
@@ -140,5 +168,10 @@ class HamsterWheel():
 
 
 if __name__ == "__main__":
-    hamsterwheel = HamsterWheel(mode=['local'], wheelpin=18, local_log_path=FILENAME_LOG_HAMSTERWHEEL)
+    hamsterwheel = HamsterWheel(
+        mode=['local'],
+        wheelpin=18,
+        deadtime=1.0,
+        local_log_path=FILENAME_LOG_HAMSTERWHEEL
+    )
     hamsterwheel.readout()
