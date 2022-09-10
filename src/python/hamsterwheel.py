@@ -134,5 +134,5 @@ class HamsterWheel():
 
 
 if __name__ == "__main__":
-    hamsterwheel = HamsterWheel(mode=['local'], wheelpin=18, local_log_path=123)
+    hamsterwheel = HamsterWheel(mode=['local'], wheelpin=18, local_log_path=FILENAME_LOG_HAMSTERWHEEL)
     hamsterwheel.readout()
