@@ -130,6 +130,7 @@ class HamsterWheel():
         except KeyboardInterrupt:
             sys.exit()
 
+
 if __name__ == "__main__":
     hamsterwheel = HamsterWheel(mode=['local'], wheelpin=18, local_log_path=123)
     hamsterwheel.readout()
