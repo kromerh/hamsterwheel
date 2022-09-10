@@ -1,3 +1,9 @@
+"""
+================================================================================
+Author:      Heiko Kromer - 2022
+Description: This script contains constants used in hamsterwheel.py
+================================================================================
+"""
 # Flag to control if the script will be run locally on the Pi or from remote
 _REMOTE = False
 
@@ -21,7 +27,7 @@ LOG_HAMSTERWHEEL = f'{HOME}{LOGS}{FILENAME_LOG_HAMSTERWHEEL}'
 # Database connection strings
 DATABASE = 'hamsterwheel_db'
 if _REMOTE:
-    HOST = 'xxx.xxx.xxx.xxx'
+    HOST = 'xxx.xxx.xxx.xxx'  # Edit for remote access
 else:
     HOST = 'localhost'  # On the RPi local
 PORT = 3306
