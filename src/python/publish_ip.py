@@ -4,6 +4,11 @@ import subprocess
 import time
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
+import logging
+
+logger = logging.getLogger()
+logging.basicConfig(level=logging.INFO)
+
 # Get the user
 username = os.getlogin()
 
@@ -42,6 +47,8 @@ myMQTTClient.configureCredentials(
 )
 now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
 message = ''.join(file_content)
+
+Myvar= myMQTTClient.connect()
 myMQTTClient.publish(
     f"topic/{username}",
     "{\"Timestamp\" :\"" + str(now) +
