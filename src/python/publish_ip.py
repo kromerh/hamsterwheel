@@ -1,6 +1,8 @@
 import os
+from datetime import datetime
 import subprocess
 import time
+from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
 # Get the user
 username = os.getlogin()
@@ -28,9 +30,18 @@ for i, line in enumerate(file_content):
 
 file_content = file_content[nr_extract:]
 
-# Write the cleaned content to file
-ifconfig_cleaned = f'/home/{username}/ifconfig_cleaned.txt'
-with open(ifconfig_cleaned, 'w') as file:
-    for item in file_content:
-        file.write(item)
-    file.close()
+# Send the file content to AWS
+
+myMQTTClient = AWSIoTMQTTClient("rpi_hamsterwheel_sensor")
+myMQTTClient.configureEndpoint("a72qba275aic3-ats.iot.eu-central-1.amazonaws.com", 8883)
+
+myMQTTClient.configureCredentials(
+    CAFilePath="/home/wilson/certificates/AmazonRootCA1.pem",
+    KeyPath="/home/wilson/certificates/private-key.pem.key",
+    CertificatePath="/home/wilson/certificates/device-certificate.pem.crt",
+)
+now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
+myMQTTClient.publish(
+    f"topic/{username}",
+    "{\"Timestamp\" :\"" + str(now) +
+    "\", \"ifconfig\":\"" + ''.join(file_content) + "\"}", 0)
