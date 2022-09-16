@@ -26,5 +26,11 @@ for i, line in enumerate(file_content):
     if 'wlan0' in line:
         nr_extract = i
 
-file_content = [f.strip() for f in file_content[nr_extract:]]
+file_content = file_content[nr_extract:]
 
+# Write the cleaned content to file
+ifconfig_cleaned = f'/home/{username}/ifconfig_cleaned.txt'
+with open(ifconfig_cleaned, 'w') as file:
+    for item in file_content:
+        file.write(item)
+    file.close()
