@@ -33,7 +33,7 @@ for i, line in enumerate(file_content):
     if 'wlan0' in line:
         nr_extract = i
 
-file_content = file_content[nr_extract:]
+file_content = [f.strip() for f in file_content[nr_extract:]]
 
 # Send the file content to AWS
 
