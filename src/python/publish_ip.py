@@ -19,7 +19,7 @@ time.sleep(3)
 ifconfig_file = f'/home/{username}/ifconfig.txt'
 
 with open(ifconfig_file, 'r') as file:
-    file_content = file.readlines
+    file_content = file.readlines()
     file.close()
 
 print(file_content)
