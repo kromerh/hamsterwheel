@@ -2,7 +2,6 @@ import os
 import subprocess
 import time
 
-
 # Get the user
 username = os.getlogin()
 
@@ -17,9 +16,16 @@ time.sleep(3)
 
 # Load the wlan information from file
 ifconfig_file = f'/home/{username}/ifconfig.txt'
-
 with open(ifconfig_file, 'r') as file:
     file_content = file.readlines()
     file.close()
 
-print(file_content)
+# Clean the file info to extract only wlan0 content
+nr = 0
+nr_extract = 0
+for nr in range(0, len(file_content)):
+    line = file_content[nr]
+    if 'wlan0' in line:
+        nr_extract = nr
+
+print(file_content[nr_extract:])
