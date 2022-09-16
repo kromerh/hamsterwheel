@@ -21,11 +21,10 @@ with open(ifconfig_file, 'r') as file:
     file.close()
 
 # Clean the file info to extract only wlan0 content
-nr = 0
-nr_extract = 0
-for nr in range(0, len(file_content)):
-    line = file_content[nr]
+nr: int = 0
+nr_extract: int = 0
+for i, line in enumerate(file_content):
     if 'wlan0' in line:
-        nr_extract = nr
+        nr_extract = i
 
 print(file_content[nr_extract:])
