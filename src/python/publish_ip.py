@@ -41,7 +41,10 @@ myMQTTClient.configureCredentials(
     CertificatePath="/home/wilson/certificates/device-certificate.pem.crt",
 )
 now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
+message = ''.join(file_content)
 myMQTTClient.publish(
     f"topic/{username}",
     "{\"Timestamp\" :\"" + str(now) +
-    "\", \"ifconfig\":\"" + ''.join(file_content) + "\"}", 0)
+    "\", \"ifconfig\":\"" + message + "\"}", 0)
+
+print(f'Published message {message}. Timestamp: {now}.')
