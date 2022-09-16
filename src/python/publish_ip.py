@@ -47,11 +47,11 @@ myMQTTClient.configureCredentials(
 )
 now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
 message = ''.join(file_content)
-
+topic = f'topic/{username}'
 Myvar= myMQTTClient.connect()
 myMQTTClient.publish(
-    f"topic/{username}",
+    topic,
     "{\"Timestamp\" :\"" + str(now) +
     "\", \"ifconfig\":\"" + message + "\"}", 0)
 
-print(f'Published message {message}. Timestamp: {now}.')
+print(f'Published message {message}. Timestamp: {now}. Topic: {topic}')
