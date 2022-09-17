@@ -45,6 +45,7 @@ myMQTTClient.configureCredentials(
     KeyPath="/home/wilson/certificates/private-key.pem.key",
     CertificatePath="/home/wilson/certificates/device-certificate.pem.crt",
 )
+
 now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
 message = ''.join(file_content)
 topic = f'topic/{username}'
@@ -53,5 +54,14 @@ myMQTTClient.publish(
     topic,
     "{\"Timestamp\" :\"" + str(now) +
     "\", \"ifconfig\":\"" + message + "\"}", 0)
+print(f'Published message {message}. Timestamp: {now}. Topic: {topic}')
 
+now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
+message = ''.join(file_content)
+topic = f'topic/wilson2'
+Myvar= myMQTTClient.connect()
+myMQTTClient.publish(
+    topic,
+    "{\"Timestamp\" :\"" + str(now) +
+    "\", \"ifconfig\":\"" + message + "\"}", 0)
 print(f'Published message {message}. Timestamp: {now}. Topic: {topic}')
