@@ -55,6 +55,7 @@ myMQTTClient.publish(
     "{\"Timestamp\" :\"" + str(now) +
     "\", \"ifconfig\":\"" + message + "\"}", 0)
 print(f'Published message {message}. Timestamp: {now}. Topic: {topic}')
+time.sleep(5)
 
 now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
 message = ''.join(file_content)
