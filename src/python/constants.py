@@ -9,31 +9,24 @@ _REMOTE = False
 
 # RPi paths
 HOME = '/home/wilson/'
-REPO = 'repo'
-BASH = '/src/bash/'
+REPO = 'hamsterwheel'
 LOGS = '/logs/'
 
-# Bash script to start the readout
-FILENAME_RUN_HAMSTERWHEEL = 'run_hamsterwheel.sh'
 # Log file for the hamsterwheel readout code
 FILENAME_LOG_HAMSTERWHEEL = 'hamsterwheel.log'
 # Log file for the handler of the script
-FILENAME_LOG_HAMSTERWHEEL_HANDLER = 'hamsterwheel_handler.log'
+FILENAME_LOG_PUBLISHIP = 'hamsterwheel_handler.log'
+# Filename for the script to retrieve ifconfig results
+FILENAME_GET_WLAN = 'get_wlan.sh'
+# Path to the bash script to retrieve ifconfig results
+BASH_GET_WLAN = f'/{REPO}/src/bash/{FILENAME_GET_WLAN}'
 
-SH_HAMSTERWHEEL = f'{HOME}{REPO}{BASH}{FILENAME_RUN_HAMSTERWHEEL}'
 LOG_HAMSTERWHEEL = f'{HOME}{LOGS}{FILENAME_LOG_HAMSTERWHEEL}'
+LOG_PUBLISHIP = f'{HOME}{LOGS}{FILENAME_LOG_PUBLISHIP}'
 
-# Database
-# Database connection strings
-DATABASE = 'hamsterwheel_db'
-if _REMOTE:
-    HOST = 'xxx.xxx.xxx.xxx'  # Edit for remote access
-else:
-    HOST = 'localhost'  # On the RPi local
-PORT = 3306
-FULL_PATH_TO_CREDENTIALS = f'{HOME}/credentials.cred'
-# For execution on another host
-
-# Table for the wheel data
-NO_END_TIME = '0000-00-00 00:00:00.000000'
-TABLE_HAMSTERWHEEL = 'hamsterwheel'
+# AWS
+AWS_CLIENT_NAME = "rpi_hamsterwheel_sensor"
+AWS_ENDPOINT = "a72qba275aic3-ats.iot.eu-central-1.amazonaws.com"
+AWS_CA_FILE = "/home/wilson/certificates/AmazonRootCA1.pem"
+AWS_KEY = "/home/wilson/certificates/private-key.pem.key"
+AWS_CERT = "/home/wilson/certificates/device-certificate.pem.crt"
