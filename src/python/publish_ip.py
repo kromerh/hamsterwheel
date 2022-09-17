@@ -59,7 +59,7 @@ time.sleep(5)
 
 now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
 message = ''.join(file_content)
-topic = f'topic/wilson2'
+topic = 'topic/wilson2'
 Myvar= myMQTTClient.connect()
 myMQTTClient.publish(
     topic,
