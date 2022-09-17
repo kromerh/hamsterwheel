@@ -68,7 +68,7 @@ class PublishIp():
         log(log_path=LOG_PUBLISHIP, logmsg=msg, printout=True)
         return path_to_bash
 
-    def setup_aws(self) -> None:
+    def setup_aws(self) -> AWSIoTMQTTClient:
         """Method to set up communication with AWS.
 
         """
@@ -115,6 +115,7 @@ class PublishIp():
         subprocess.call(['sh', self.path_to_bash])
         msg = 'Started bash to read ifconfig.'
         log(log_path=LOG_PUBLISHIP, logmsg=msg, printout=True)
+        time.sleep(0.1)
     
     def clean_ifconfig_file(self, file_content: List[str]) -> List[str]:
         """Method to clean the ifconfig file content.
@@ -136,7 +137,7 @@ class PublishIp():
 
         return file_content
 
-    def publish_message(self, mqtt_client, file_content: List[str]) -> None:
+    def publish_message(self, mqtt_client: AWSIoTMQTTClient, file_content: List[str]) -> None:
         """Method to publish message to AWS with the ifconfig wlan information.
         """
         assert self.username is not None
@@ -150,7 +151,7 @@ class PublishIp():
             topic,
             "{\"Timestamp\" :\"" + str(now) +
             "\", \"ifconfig\":\"" + message + "\"}", 0)
-        msg = 'Published to topic {topic} with message {message}.'
+        msg = f'Published to topic {topic} with message {message}.'
         log(log_path=LOG_PUBLISHIP, logmsg=msg, printout=True)
 
 
@@ -164,6 +165,5 @@ if __name__ == "__main__":
     ifconfig_content = publish_ip.clean_ifconfig_file(file_content=ifconfig_content)
     # Connect to AWS
     mqtt_client = publish_ip.setup_aws()
-    print(type(mqtt_client))
     # Publish mesage
     publish_ip.publish_message(mqtt_client=mqtt_client, file_content=ifconfig_content)
