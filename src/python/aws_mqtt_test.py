@@ -5,6 +5,7 @@ from awscrt import mqtt
 import sys
 import time
 from uuid import uuid4
+from datetime import datetime
 import json
 
 # This sample uses the Message Broker for AWS IoT to send and receive messages
@@ -67,7 +68,9 @@ if __name__ == '__main__':
     print("Connected!")
 
     message_topic = 'sdk/test/Python'
-    message_string = cmdUtils.get_command(cmdUtils.m_cmd_message)
+    # message_string = cmdUtils.get_command(cmdUtils.m_cmd_message)
+    date = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
+    message_string = "{\"Timestamp\" :\""+ str(date) + "\", \"Magnet\":\""+ str(0) + "\"}"
 
     # Publish message to server desired number of times.
     # This step is skipped if message is blank.
