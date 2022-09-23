@@ -6,8 +6,6 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
 
 from constants import (
-    BASH_GET_WLAN,
-    LOG_PUBLISHIP,
     AWS_CLIENT_NAME,
     AWS_ENDPOINT,
     AWS_CA_FILE,
