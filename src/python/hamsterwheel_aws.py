@@ -179,10 +179,12 @@ class HamsterWheel():
         # Set AWS if selected
         if 'aws' in self._mode:
             mqtt_client = self.setup_aws()
+            mqtt_connection = mqtt_client.connect()
 
         msg = 'Started script...'
         log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
-        mqtt_connection = mqtt_client.connect()
+
+        
 
         try:
             # Readout loop
