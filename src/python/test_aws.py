@@ -35,7 +35,7 @@ while True:
     date = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
     message = "Test message"
     mqtt_client.publish(
-        "topic/pi",
+        "topic/wilson",
         "{\"Timestamp\" :\""+ str(date) +
         "\", \"Mesage\":\""+ str(0) + "\"}", 0)
     logger.info(f'Published message {message}. Timestamp: {date}.')
