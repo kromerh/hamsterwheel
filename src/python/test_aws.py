@@ -34,7 +34,7 @@ logger.info(f"Starting logging. Timestamp: {date}.")
 while True:
     date = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
     message = "Test message"
-    myMQTTClient.publish(
+    mqtt_client.publish(
         "topic/pi",
         "{\"Timestamp\" :\""+ str(date) +
         "\", \"Mesage\":\""+ str(0) + "\"}", 0)
