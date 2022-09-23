@@ -37,6 +37,6 @@ while True:
     mqtt_client.publish(
         "topic/wilson",
         "{\"Timestamp\" :\""+ str(date) +
-        "\", \"Mesage\":\""+ str(0) + "\"}", 0)
+        "\", \"Message\":\""+ message + "\"}", 0)
     logger.info(f'Published message {message}. Timestamp: {date}.')
     time.sleep(1)
