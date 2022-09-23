@@ -1,4 +1,3 @@
-import RPi.GPIO as io
 from datetime import datetime
 import time
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
@@ -30,18 +29,10 @@ logger.info(f"Starting logging. Timestamp: {date}.")
 
 while True:
     date = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
-    if (io.input(wheelpin) == 0):
-        message = "Magnet closed."
-        myMQTTClient.publish(
-            "topic/pi",
-            "{\"Timestamp\" :\""+ str(date) +
-            "\", \"Magnet\":\""+ str(0) + "\"}", 0)
-        logger.info(f'Published message {message}. Timestamp: {date}.')
-    else:
-        message = "Magnet open."
-        myMQTTClient.publish(
-            "topic/pi",
-            "{\"Timestamp\" :\""+ str(date) +
-            "\", \"Magnet\":\""+ str(1) + "\"}", 0)
-        logger.info(f'Published message {message}. Timestamp: {date}.')
+    message = "Test message"
+    myMQTTClient.publish(
+        "topic/pi",
+        "{\"Timestamp\" :\""+ str(date) +
+        "\", \"Mesage\":\""+ str(0) + "\"}", 0)
+    logger.info(f'Published message {message}. Timestamp: {date}.')
     time.sleep(1)
