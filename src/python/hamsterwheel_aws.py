@@ -163,7 +163,7 @@ class HamsterWheel():
         mqtt_client.publish(
             topic,
             "{\"Timestamp\" :\"" + str(now) +
-            "\", \"ifconfig\":\"" + message + "\"}", 0)
+            "\", \"Message\":\"" + message + "\"}", 0)
         msg = f'Published to topic {topic} with message {message}.'
         log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
         
