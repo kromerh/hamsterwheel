@@ -70,16 +70,15 @@ if __name__ == '__main__':
     message_topic = 'sdk/test/Python'
     # message_string = cmdUtils.get_command(cmdUtils.m_cmd_message)
     date = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
-    message_string = "{\"Timestamp\" :\""+ str(date) + "\", \"Magnet\":\""+ str(0) + "\"}"
+    message = "{\"Timestamp\" :\""+ str(date) + "\", \"Magnet\":\""+ str(0) + "\"}"
 
     # Publish message to server desired number of times.
     # This step is skipped if message is blank.
     # This step loops forever if count was set to 0.
-    if message_string:
+    if message:
 
         publish_count = 1
         while True:
-            message = "{} [{}]".format(message_string, publish_count)
             print("Publishing message to topic '{}': {}".format(message_topic, message))
             message_json = json.dumps(message)
             mqtt_connection.publish(

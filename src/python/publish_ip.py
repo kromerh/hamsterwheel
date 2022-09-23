@@ -154,16 +154,48 @@ class PublishIp():
         msg = f'Published to topic {topic} with message {message}.'
         log(log_path=LOG_PUBLISHIP, logmsg=msg, printout=True)
 
+from subprocess import Popen, PIPE
+
+# looking for an active Ethernet or WiFi device
+def find_interface():
+    find_device = "ip addr show"
+    interface_parse = run_cmd(find_device)
+    for line in interface_parse.splitlines():
+        if "state UP" in line:
+            dev_name = line.split(':')[1]
+    return dev_name
+
+# find an active IP on the first LIVE network device
+def parse_ip():
+    find_ip = "ip addr show %s" % interface
+    find_ip = "ip addr show %s" % interface
+    ip_parse = run_cmd(find_ip)
+    for line in ip_parse.splitlines():
+        if "inet " in line:
+            ip = line.split(' ')[5]
+            ip = ip.split('/')[0]
+    return ip
+
+# run unix shell command, return as ASCII
+def run_cmd(cmd):
+    p = Popen(cmd, shell=True, stdout=PIPE)
+    output = p.communicate()[0]
+    return output.decode('ascii')
+
+interface = find_interface()
+ip_address = parse_ip()
+
 
 if __name__ == "__main__":
-    publish_ip = PublishIp()
-    # Run the bash to retrieve ifconfig and save to ifconfig.txt
-    publish_ip.run_bash()
-    # Read ifconfig content
-    ifconfig_content = publish_ip.read_ifconfig()
-    # Clean ifconfig content
-    ifconfig_content = publish_ip.clean_ifconfig_file(file_content=ifconfig_content)
-    # Connect to AWS
-    mqtt_client = publish_ip.setup_aws()
-    # Publish mesage
-    publish_ip.publish_message(mqtt_client=mqtt_client, file_content=ifconfig_content)
+    # publish_ip = PublishIp()
+    # # Run the bash to retrieve ifconfig and save to ifconfig.txt
+    # publish_ip.run_bash()
+    # # Read ifconfig content
+    # ifconfig_content = publish_ip.read_ifconfig()
+    # # Clean ifconfig content
+    # ifconfig_content = publish_ip.clean_ifconfig_file(file_content=ifconfig_content)
+    # # Connect to AWS
+    # mqtt_client = publish_ip.setup_aws()
+    # # Publish mesage
+    # publish_ip.publish_message(mqtt_client=mqtt_client, file_content=ifconfig_content)
+    print(ip_address)
