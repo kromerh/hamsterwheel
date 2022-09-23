@@ -195,17 +195,21 @@ class HamsterWheel():
                         msg = 'pin_state = 0'
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
                     if 'aws' in self._mode:
-                        pass
+                        if mqtt_client is None:
+                            msg = 'Error, MQTT client not initialized.'
+                            log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
+                        else:
+                            self.send_message(topic=AWS_TOPIC, message=msg, mqtt_client=mqtt_client)
                 else:
                     if 'local' in self._mode:
                         msg = 'pin_state = 1'
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
                     if 'aws' in self._mode:
-                        if mqtt_connection is None:
+                        if mqtt_client is None:
                             msg = 'Error, MQTT client not initialized.'
                             log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
                         else:
-                            self.send_message(topic=self.topic, message: str, mqtt_client: AWSIoTMQTTClient) -> None:
+                            self.send_message(topic=AWS_TOPIC, message=msg, mqtt_client=mqtt_client)
 
         except KeyboardInterrupt:
             if mqtt_connection:
