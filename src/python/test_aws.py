@@ -11,6 +11,7 @@ from constants import (
     AWS_CA_FILE,
     AWS_KEY,
     AWS_CERT,
+    AWS_TOPIC,
 )
 
 logger = logging.getLogger()
@@ -35,7 +36,7 @@ while True:
     date = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
     message = "Test message"
     mqtt_client.publish(
-        "topic/wilson",
+        AWS_TOPIC,
         "{\"Timestamp\" :\""+ str(date) +
         "\", \"Message\":\""+ message + "\"}", 0)
     logger.info(f'Published message {message}. Timestamp: {date}.')

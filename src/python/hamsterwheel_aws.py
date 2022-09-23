@@ -1,10 +1,22 @@
+from datetime import datetime
 import sys
 import time
 from typing import List, Optional
 
 import RPi.GPIO as io
 
-from constants import LOG_HAMSTERWHEEL
+from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+
+from constants import (
+    LOG_HAMSTERWHEEL,
+    AWS_CLIENT_NAME,
+    AWS_ENDPOINT,
+    AWS_CA_FILE,
+    AWS_KEY,
+    AWS_CERT,
+    AWS_TOPIC,
+)
+
 from utils import log
 
 
@@ -13,14 +25,14 @@ class HamsterWheel():
 
     Attributes:
         mode: Controls output location of the sensor data.
-            Currently supports: local
+            Currently supports: local, aws
         wheelpin: GPIO pin to communicate with the reed sensor.
         deadtime: Readout dead time to protect the sensor in seconds.
             Defaults to 1 second.
         local_log_path: Full path to store the readout data in local mode.
             Is required if 'local' is part of `mode`.
     """
-    supported_modes = ['local']
+    supported_modes = ['local', 'aws']
 
     def __init__(
         self,
@@ -124,17 +136,53 @@ class HamsterWheel():
         msg = f'Set up GPIO, using wheel pin {self._wheelpin}'
         log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
 
+    def setup_aws(self) -> AWSIoTMQTTClient:
+        """Method to set up communication with AWS.
+
+        """
+        mqtt_client = AWSIoTMQTTClient(AWS_CLIENT_NAME)
+        mqtt_client.configureEndpoint(AWS_ENDPOINT, 8883)
+
+        mqtt_client.configureCredentials(
+            CAFilePath=AWS_CA_FILE,
+            KeyPath=AWS_KEY,
+            CertificatePath=AWS_CERT
+        )
+        return mqtt_client
+    
+    def send_message(self, topic: str, message: str, mqtt_client: AWSIoTMQTTClient) -> None:
+        """Method to send a message to the AWS mqtt endpoint.
+
+        Args:
+            topic: Topic to publish to.
+            message: Message to send.
+            mqtt_client: MQTT connection.
+        """
+
+        now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
+        mqtt_client.publish(
+            topic,
+            "{\"Timestamp\" :\"" + str(now) +
+            "\", \"ifconfig\":\"" + message + "\"}", 0)
+        msg = f'Published to topic {topic} with message {message}.'
+        log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
+        
 
     def readout(self) -> None:
         """Method to start the readout of the reed sensor.
 
         If readout mode 'local', puts pin_state in the logfile.
+        If readout mode 'aws', sends message to specified endpoint.
         """
         # Set GPIO
         self._setup_rpi()
+        # Set AWS if selected
+        if 'aws' in self._mode:
+            mqtt_client = self.setup_aws()
 
         msg = 'Started script...'
-        log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)    
+        log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
+        mqtt_connection = mqtt_client.connect()
 
         try:
             # Readout loop
@@ -146,12 +194,22 @@ class HamsterWheel():
                     if 'local' in self._mode:
                         msg = 'pin_state = 0'
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
+                    if 'aws' in self._mode:
+                        pass
                 else:
                     if 'local' in self._mode:
                         msg = 'pin_state = 1'
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
+                    if 'aws' in self._mode:
+                        if mqtt_connection is None:
+                            msg = 'Error, MQTT client not initialized.'
+                            log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
+                        else:
+                            self.send_message(topic=self.topic, message: str, mqtt_client: AWSIoTMQTTClient) -> None:
 
         except KeyboardInterrupt:
+            if mqtt_connection:
+                mqtt_connection.disconnect()
             sys.exit()
 
 
