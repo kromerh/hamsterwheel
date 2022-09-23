@@ -1,7 +1,9 @@
 from datetime import datetime
 import time
-from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import logging
+
+from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -14,12 +16,6 @@ myMQTTClient.configureCredentials(
     KeyPath="/home/wilson/certificates/private-key.pem.key",
     CertificatePath="/home/wilson/certificates/device-certificate.pem.crt",
 )
- 
-# Set Broadcom mode so we can address GPIO pins by number.
-io.setmode(io.BCM)
-wheelpin = 18
-logger.info(f'Setting io pin to {wheelpin}.')
-io.setup(wheelpin, io.IN, pull_up_down=io.PUD_UP) 
 
 logger.info('Initiating Realtime Data Transfer From Raspberry Pi...')
 Myvar= myMQTTClient.connect()
