@@ -5,20 +5,30 @@ import logging
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
 
+from constants import (
+    BASH_GET_WLAN,
+    LOG_PUBLISHIP,
+    AWS_CLIENT_NAME,
+    AWS_ENDPOINT,
+    AWS_CA_FILE,
+    AWS_KEY,
+    AWS_CERT,
+)
+
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
 
-myMQTTClient = AWSIoTMQTTClient("rpi_hamsterwheel_sensor")
-myMQTTClient.configureEndpoint("a72qba275aic3-ats.iot.eu-central-1.amazonaws.com", 8883)
+mqtt_client = AWSIoTMQTTClient(AWS_CLIENT_NAME)
+mqtt_client.configureEndpoint(AWS_ENDPOINT, 8883)
 
-myMQTTClient.configureCredentials(
-    CAFilePath="/home/wilson/certificates/AmazonRootCA1.pem",
-    KeyPath="/home/wilson/certificates/private-key.pem.key",
-    CertificatePath="/home/wilson/certificates/device-certificate.pem.crt",
+mqtt_client.configureCredentials(
+    CAFilePath=AWS_CA_FILE,
+    KeyPath=AWS_KEY,
+    CertificatePath=AWS_CERT
 )
 
 logger.info('Initiating Realtime Data Transfer From Raspberry Pi...')
-Myvar= myMQTTClient.connect()
+mqtt_connect = mqtt_client.connect()
 date = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
 logger.info(f"Starting logging. Timestamp: {date}.")
 
