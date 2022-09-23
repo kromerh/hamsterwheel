@@ -214,8 +214,8 @@ class HamsterWheel():
                             self.send_message(topic=AWS_TOPIC, message=msg, mqtt_client=mqtt_client)
 
         except KeyboardInterrupt:
-            if mqtt_connection:
-                mqtt_connection.disconnect()
+            if mqtt_client:
+                mqtt_client.disconnect()
             sys.exit()
 
 
