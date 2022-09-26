@@ -9,6 +9,7 @@ while cnt < 10:
     GPIO.output(LED_PIN, GPIO.HIGH)
     time.sleep(1)
     GPIO.output(LED_PIN, GPIO.LOW)
+    time.sleep(1)
     cnt += 1
 
 GPIO.cleanup()
