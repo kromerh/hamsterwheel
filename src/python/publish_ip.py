@@ -150,7 +150,7 @@ class PublishIp():
         mqtt_client.publish(
             topic,
             "{\"Timestamp\" :\"" + str(now) +
-            "\, \"username\" :\"" + str(self.username) +
+            "\", \"username\" :\"" + str(self.username) +
             "\", \"ip\":\"" + message + "\"}", 0)
         msg = f'Published to topic {topic} with message {message}.'
         log(log_path=LOG_PUBLISHIP, logmsg=msg, printout=True)
