@@ -1,6 +1,11 @@
 import sys
 import time
+import loggin
 import RPi.GPIO as GPIO
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
 
 # Set the LED pin number
 LED_PIN = 4
@@ -14,8 +19,10 @@ try:
     cnt = 0
     while cnt < 30:
         GPIO.output(LED_PIN, GPIO.HIGH)
+        logger.info("## Turned LED ON")
         time.sleep(1)
         GPIO.output(LED_PIN, GPIO.LOW)
+        logger.info("## Turned LED OFF")
         time.sleep(1)
         cnt += 1
     GPIO.cleanup()
