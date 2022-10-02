@@ -8,7 +8,7 @@ logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 # Set the LED pin number
-LED_PIN = 4
+LED_PIN = 26
 
 # Set the GPIO modes
 GPIO.setmode(GPIO.BCM)
