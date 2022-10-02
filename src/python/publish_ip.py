@@ -3,6 +3,7 @@ from datetime import datetime
 import subprocess
 import time
 from typing import List
+from subprocess import Popen, PIPE
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 
 from utils import log
@@ -137,14 +138,14 @@ class PublishIp():
 
         return file_content
 
-    def publish_message(self, mqtt_client: AWSIoTMQTTClient, file_content: List[str]) -> None:
+    def publish_message(self, mqtt_client: AWSIoTMQTTClient, message: str) -> None:
         """Method to publish message to AWS with the ifconfig wlan information.
         """
         assert self.username is not None
         topic = f'topic/{self.username}'
 
         now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
-        message = ''.join(file_content)
+        
         topic = f'topic/{self.username}'
         mqtt_connection = mqtt_client.connect()
         mqtt_client.publish(
@@ -154,39 +155,58 @@ class PublishIp():
         msg = f'Published to topic {topic} with message {message}.'
         log(log_path=LOG_PUBLISHIP, logmsg=msg, printout=True)
 
-from subprocess import Popen, PIPE
+    def find_interface(self) -> str:
+        """Method to find the device name looking for an active Ethernet or WiFi device
 
-# looking for an active Ethernet or WiFi device
-def find_interface():
-    find_device = "ip addr show"
-    interface_parse = run_cmd(find_device)
-    for line in interface_parse.splitlines():
-        if "state UP" in line:
-            dev_name = line.split(':')[1]
-    return dev_name
+        Returns:
+            Device name as string.
+        """
+        find_device = "ip addr show"
+        interface_parse = self.run_cmd(cmd=find_device)
+        for line in interface_parse.splitlines():
+            if "state UP" in line:
+                dev_name = line.split(':')[1]
 
-# find an active IP on the first LIVE network device
-def parse_ip():
-    find_ip = "ip addr show %s" % interface
-    find_ip = "ip addr show %s" % interface
-    ip_parse = run_cmd(find_ip)
-    for line in ip_parse.splitlines():
-        if "inet " in line:
-            ip = line.split(' ')[5]
-            ip = ip.split('/')[0]
-    return ip
+        return dev_name
 
-# run unix shell command, return as ASCII
-def run_cmd(cmd):
-    p = Popen(cmd, shell=True, stdout=PIPE)
-    output = p.communicate()[0]
-    return output.decode('ascii')
+    def parse_ip(self, interface: str) -> str:
+        """Method to find an active IP on the first live network device.
 
-interface = find_interface()
-ip_address = parse_ip()
+        Args:
+            interface: Device name.
+        
+        Returns:
+            IP address of the interface device
+        """
+        find_ip = f"ip addr show {interface}"
+        find_ip = f"ip addr show {interface}"
+        ip_parse = self.run_cmd(cmd=find_ip)
+        for line in ip_parse.splitlines():
+            if "inet " in line:
+                ip = line.split(' ')[5]
+                ip = ip.split('/')[0]
+
+        return ip
+
+    def run_cmd(self, cmd: str) -> str:
+        """Method to run a command via Popen.
+
+        Args:
+            cmd: Command to run.
+        
+        Returns:
+            Response from the command.
+        """
+        p = Popen(cmd, shell=True, stdout=PIPE)
+        output = p.communicate()[0]
+
+        return output.decode('ascii')
 
 
 if __name__ == "__main__":
+    # -------------------------------------------------------------------------------- #
+    # Use below commented out commented oll the content in ifconfig
+    # -------------------------------------------------------------------------------- #
     # publish_ip = PublishIp()
     # # Run the bash to retrieve ifconfig and save to ifconfig.txt
     # publish_ip.run_bash()
@@ -197,5 +217,15 @@ if __name__ == "__main__":
     # # Connect to AWS
     # mqtt_client = publish_ip.setup_aws()
     # # Publish mesage
-    # publish_ip.publish_message(mqtt_client=mqtt_client, file_content=ifconfig_content)
-    print(ip_address)
+    # message = ''.join(ifconfig_content)
+    # publish_ip.publish_message(mqtt_client=mqtt_client, message=message)
+    # -------------------------------------------------------------------------------- #
+    # Use below to find only IP address
+    # -------------------------------------------------------------------------------- #
+    publish_ip = PublishIp()
+    interface = publish_ip.find_interface()
+    ip_address = publish_ip.parse_ip(interface=interface)
+    # # Connect to AWS
+    mqtt_client = publish_ip.setup_aws()
+    # # Publish mesage
+    publish_ip.publish_message(mqtt_client=mqtt_client, message=ip_address)

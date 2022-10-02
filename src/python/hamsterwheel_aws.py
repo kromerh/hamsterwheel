@@ -25,8 +25,9 @@ class HamsterWheel():
 
     Attributes:
         mode: Controls output location of the sensor data.
-            Currently supports: local, aws
+            Currently supports: local
         wheelpin: GPIO pin to communicate with the reed sensor.
+        wheelpin: GPIO pin to control the LED.
         deadtime: Readout dead time to protect the sensor in seconds.
             Defaults to 1 second.
         local_log_path: Full path to store the readout data in local mode.
@@ -38,12 +39,14 @@ class HamsterWheel():
         self,
         mode: List[str],
         wheelpin: int,
+        ledpin: int,
         deadtime: float = 1.0,
         local_log_path: Optional[str] = None,
     ) -> None:
         self._local_log_path = local_log_path
         self._mode = HamsterWheel._validate_mode(mode=mode, local_log_path=local_log_path)
-        self._wheelpin = HamsterWheel._validate_wheelpin(wheelpin=wheelpin)
+        self._wheelpin = HamsterWheel._validate_pin(pin=wheelpin)
+        self._ledpin = HamsterWheel._validate_pin(pin=ledpin)
         self._deadtime = HamsterWheel._validate_deadtime(deadtime=deadtime)
 
     @classmethod
@@ -79,28 +82,28 @@ class HamsterWheel():
         return mode
 
     @classmethod
-    def _validate_wheelpin(cls, wheelpin: int) -> int:
+    def _validate_pin(cls, pin: int) -> int:
         """Class method to validate user input.
 
         Args:
-            wheelpin: Wheelpin input argument.
+            pin: pin input argument.
 
         Returns:
-            Wheelpin if it is valid.
+            Pin if it is valid.
 
         Raises:
             ValueError if the user input is not supported.
         """
         try:
-            assert isinstance(wheelpin, int)
-            assert wheelpin > 0
-            assert wheelpin < 40
+            assert isinstance(pin, int)
+            assert pin > 0
+            assert pin < 40
 
         except AssertionError:
-            errmsg = f'Wheelpin {wheelpin} is supported. Must be smaller 40 and larger 0.'
+            errmsg = f'Pin {pin} is supported. Must be smaller 40 and larger 0.'
             raise ValueError(errmsg) from AssertionError
 
-        return wheelpin
+        return pin
 
     @classmethod
     def _validate_deadtime(cls, deadtime: float) -> float:

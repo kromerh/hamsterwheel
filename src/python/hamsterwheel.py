@@ -15,6 +15,7 @@ class HamsterWheel():
         mode: Controls output location of the sensor data.
             Currently supports: local
         wheelpin: GPIO pin to communicate with the reed sensor.
+        wheelpin: GPIO pin to control the LED.
         deadtime: Readout dead time to protect the sensor in seconds.
             Defaults to 1 second.
         local_log_path: Full path to store the readout data in local mode.
@@ -26,12 +27,14 @@ class HamsterWheel():
         self,
         mode: List[str],
         wheelpin: int,
+        ledpin: int,
         deadtime: float = 1.0,
         local_log_path: Optional[str] = None,
     ) -> None:
         self._local_log_path = local_log_path
         self._mode = HamsterWheel._validate_mode(mode=mode, local_log_path=local_log_path)
-        self._wheelpin = HamsterWheel._validate_wheelpin(wheelpin=wheelpin)
+        self._wheelpin = HamsterWheel._validate_pin(pin=wheelpin)
+        self._ledpin = HamsterWheel._validate_pin(pin=ledpin)
         self._deadtime = HamsterWheel._validate_deadtime(deadtime=deadtime)
 
     @classmethod
@@ -67,28 +70,28 @@ class HamsterWheel():
         return mode
 
     @classmethod
-    def _validate_wheelpin(cls, wheelpin: int) -> int:
+    def _validate_pin(cls, pin: int) -> int:
         """Class method to validate user input.
 
         Args:
-            wheelpin: Wheelpin input argument.
+            pin: pin input argument.
 
         Returns:
-            Wheelpin if it is valid.
+            Pin if it is valid.
 
         Raises:
             ValueError if the user input is not supported.
         """
         try:
-            assert isinstance(wheelpin, int)
-            assert wheelpin > 0
-            assert wheelpin < 40
+            assert isinstance(pin, int)
+            assert pin > 0
+            assert pin < 40
 
         except AssertionError:
-            errmsg = f'Wheelpin {wheelpin} is supported. Must be smaller 40 and larger 0.'
+            errmsg = f'Pin {pin} is supported. Must be smaller 40 and larger 0.'
             raise ValueError(errmsg) from AssertionError
 
-        return wheelpin
+        return pin
 
     @classmethod
     def _validate_deadtime(cls, deadtime: float) -> float:
@@ -120,6 +123,12 @@ class HamsterWheel():
         # Set Broadcom mode so we can address GPIO pins by number.
         io.setmode(io.BCM)
 
+        # Set LED pin
+        io.setup(self._ledpin, io.OUT)
+        msg = f'Set up GPIO, using led pin {self._ledpin}'
+        log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
+
+        # Set wheel pin
         io.setup(self._wheelpin, io.IN, pull_up_down=io.PUD_UP)
         msg = f'Set up GPIO, using wheel pin {self._wheelpin}'
         log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
@@ -144,14 +153,19 @@ class HamsterWheel():
                 time.sleep(self._deadtime)
                 if io.input(self._wheelpin) == 0:
                     if 'local' in self._mode:
-                        msg = 'pin_state = 0'
+                        # Record that loop is open
+                        msg = '0'
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
                 else:
                     if 'local' in self._mode:
-                        msg = 'pin_state = 1'
+                        # Turn LED on
+                        io.output(self._ledpin, io.HIGH)
+                        # Record that loop is closed
+                        msg = '1'
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
 
         except KeyboardInterrupt:
+            io.cleanup()
             sys.exit()
 
 
@@ -159,6 +173,7 @@ if __name__ == "__main__":
     hamsterwheel = HamsterWheel(
         mode=['local'],
         wheelpin=18,
+        ledpin=17,
         deadtime=1.0,
         local_log_path=LOG_HAMSTERWHEEL
     )
