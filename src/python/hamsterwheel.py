@@ -153,14 +153,16 @@ class HamsterWheel():
                 time.sleep(self._deadtime)
                 if io.input(self._wheelpin) == 0:
                     if 'local' in self._mode:
-                        # Record that loop is open
+                        # Turn LED on
+                        io.output(self._ledpin, io.HIGH)
+                        # Record that loop is closed
                         msg = '0'
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
                 else:
                     if 'local' in self._mode:
-                        # Turn LED on
-                        io.output(self._ledpin, io.HIGH)
-                        # Record that loop is closed
+                        # Turn LED off
+                        io.output(self._ledpin, io.LOW)
+                        # Record that loop is open
                         msg = '1'
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
 
