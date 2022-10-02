@@ -135,6 +135,12 @@ class HamsterWheel():
         # Set Broadcom mode so we can address GPIO pins by number.
         io.setmode(io.BCM)
 
+        # Set LED pin
+        io.setup(self._ledpin, io.OUT)
+        msg = f'Set up GPIO, using led pin {self._ledpin}'
+        log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
+
+        # Set wheel pin
         io.setup(self._wheelpin, io.IN, pull_up_down=io.PUD_UP)
         msg = f'Set up GPIO, using wheel pin {self._wheelpin}'
         log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
@@ -186,9 +192,7 @@ class HamsterWheel():
 
         msg = 'Started script...'
         log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
-
-        
-
+      
         try:
             # Readout loop
             while True:
@@ -196,8 +200,10 @@ class HamsterWheel():
                 log(log_path=LOG_HAMSTERWHEEL, logmsg=msg, printout=True)
                 time.sleep(self._deadtime)
                 if io.input(self._wheelpin) == 0:
+                    msg = '0'
                     if 'local' in self._mode:
-                        msg = 'pin_state = 0'
+                        # Turn LED on
+                        io.output(self._ledpin, io.HIGH)
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
                     if 'aws' in self._mode:
                         if mqtt_client is None:
@@ -206,8 +212,10 @@ class HamsterWheel():
                         else:
                             self.send_message(topic=AWS_TOPIC, message=msg, mqtt_client=mqtt_client)
                 else:
+                    msg = '1'
                     if 'local' in self._mode:
-                        msg = 'pin_state = 1'
+                        # Turn LED off
+                        io.output(self._ledpin, io.LOW)  
                         log(log_path=self._local_log_path, logmsg=msg, printout=True)
                     if 'aws' in self._mode:
                         if mqtt_client is None:
@@ -226,6 +234,7 @@ if __name__ == "__main__":
     hamsterwheel = HamsterWheel(
         mode=['local', 'aws'],
         wheelpin=18,
+        ledpin=4,
         deadtime=1.0,
         local_log_path=LOG_HAMSTERWHEEL
     )
