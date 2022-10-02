@@ -142,16 +142,16 @@ class PublishIp():
         """Method to publish message to AWS with the ifconfig wlan information.
         """
         assert self.username is not None
-        topic = f'topic/{self.username}'
 
         now = datetime.now().strftime("%Y-%m-%d %I:%M:%S")
         
-        topic = f'topic/{self.username}'
+        topic = f'topic/publish_ip'
         mqtt_connection = mqtt_client.connect()
         mqtt_client.publish(
             topic,
             "{\"Timestamp\" :\"" + str(now) +
-            "\", \"ifconfig\":\"" + message + "\"}", 0)
+            "\"username\" :\"" + str(self.username) +
+            "\", \"ip\":\"" + message + "\"}", 0)
         msg = f'Published to topic {topic} with message {message}.'
         log(log_path=LOG_PUBLISHIP, logmsg=msg, printout=True)
 
