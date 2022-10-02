@@ -8,7 +8,7 @@ Description: This script contains constants used in hamsterwheel.py
 _REMOTE = False
 
 # RPi paths
-HOME = '/home/wilson/'
+HOME = '/home/done2/'
 REPO = 'hamsterwheel'
 LOGS = '/logs/'
 
