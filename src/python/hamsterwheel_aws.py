@@ -234,8 +234,8 @@ class HamsterWheel():
 if __name__ == "__main__":
     hamsterwheel = HamsterWheel(
         mode=['local', 'aws'],
-        wheelpin=18,
-        ledpin=4,
+        wheelpin=4,
+        ledpin=26,
         deadtime=1.0,
         local_log_path=LOG_HAMSTERWHEEL
     )
