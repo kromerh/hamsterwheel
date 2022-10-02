@@ -1,6 +1,6 @@
 import sys
 import time
-import loggin
+import logging
 import RPi.GPIO as GPIO
 
 logger = logging.getLogger()
